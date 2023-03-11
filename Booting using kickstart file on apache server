@@ -1,0 +1,66 @@
+############################STEPS##########################
+yum install httpd
+systemctl enable --now httpd
+mkdir /var/www/html/pub
+mount /dev/cdrom /mnt
+cd /mnt
+cp -arv * /var/www/html/pub
+cd /root
+umount /mnt
+cp anaconda-ks.cfg /var/www/html/pub 
+vim /var/www/html/pub/anaconda-ks.cfg
+#version=DEVEL
+# System authorization information
+auth --enableshadow --passalgo=sha512
+repo --name="Server-HighAvailability" --baseurl=file:///run/install/repo/addons/HighAvailability
+repo --name="Server-ResilientStorage" --baseurl=file:///run/install/repo/addons/ResilientStorage
+# Use CDROM installation media
+url --url="http://192.168.170.130/pub" #instead of booting from cdrom i made it boot from http 
+# Use graphical install
+graphical
+# Run the Setup Agent on first boot
+firstboot --enable
+ignoredisk --only-use=sda
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Network information
+network  --bootproto=dhcp --device=eno16777736 --ipv6=auto --activate
+network  --hostname=localhost.localdomain
+
+# Root password
+rootpw --iscrypted $6$EZB5UXpFv5rgvVf8$MCiU4H8K9mEazpJsfNuyiwDzSus0/vU21Rn2sOmMUnfWtsJvlnoOiHWwEZPLkB0COdrDOD.pyIBP.qMa.Yb.X0
+# System services
+services --disabled="chronyd"
+# System timezone
+timezone Africa/Cairo --isUtc --nontp
+user --groups=wheel --name=hadeer --password=$6$C/OsOJkbsiOhIYev$7FKqlUFJbKRBepYkNtlSiepn2MKgxot6POBy1HvftKTMqHlP0RdetDApxNc63Cv/61d4dSELQdEuxSW.YbmwD. --iscrypted --gecos="hadeer"
+# System bootloader configuration
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=sda
+autopart --type=lvm
+# Partition clearing information
+clearpart --all --initlabel  
+firewall --disable
+selinux disabled
+install
+%packages
+@^infrastructure-server-environment
+@base
+@core
+kexec-tools
+
+%end
+
+%addon com_redhat_kdump --enable --reserve-mb='auto'
+
+%end
+
+systemctl restart httpd 
+###############################################################################################
+create a new machine 
+then before bootint click tab then write
+linux ks=http://192.168.130/pub/anaconda-ks.cfg
+
+Then the  machine will boot automatically without any asking for any choice 
