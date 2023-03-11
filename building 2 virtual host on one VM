@@ -1,0 +1,38 @@
+vim /etc/httpd/conf.d/ahmed.com.conf
+<VirtualHost *:80>
+ServerName ahmed.com
+DocumentRoot /var/www/ahmed.com
+DirectoryIndex index.html
+</VirtualHost>
+
+<Directory "/var/www/ahmed.com">
+AllowOverride All
+Require all granted
+</Directory>
+
+vim /etc/httpd/conf.d/mohamed.com.conf
+<VirtualHost *:80>
+ServerName mohamed.com
+DocumentRoot /var/www/mohamed.com
+DirectoryIndex index.html
+</VirtualHost>
+
+<Directory "/var/www/mohamed.com">
+AllowOverride All
+Require all granted
+</Directory>
+
+mkdir /var/www/ahmed.com
+mkdir /var/www/mohamed.com
+
+vim /var/www/ahmed.com/index.html
+Welcome to AHMED.COM
+
+vim /var/www/mohamed.com/index.html
+Welcome to MOHAMED.COM
+
+systemctl restart httpd
+
+vim /etc/hosts
+192.168.170.144 ahmed.com
+192.168.170.144 mohamed.com
